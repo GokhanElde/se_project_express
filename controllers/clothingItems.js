@@ -19,9 +19,11 @@ module.exports.createItem = (req, res, next) => {
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        err.statusCode = BAD_REQUEST;
+        const error = new Error("Invalid data");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -35,8 +37,10 @@ module.exports.deleteItem = (req, res, next) => {
     .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST;
+        const error = new Error("Invalid item id");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };

@@ -17,9 +17,11 @@ module.exports.getUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST;
+        const error = new Error("Invalid user id");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -30,8 +32,10 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        err.statusCode = BAD_REQUEST;
+        const error = new Error("Invalid data");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };

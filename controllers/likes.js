@@ -15,9 +15,11 @@ module.exports.likeItem = (req, res, next) => {
     .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST;
+        const error = new Error("Invalid item id");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -35,8 +37,10 @@ module.exports.dislikeItem = (req, res, next) => {
     .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        err.statusCode = BAD_REQUEST;
+        const error = new Error("Invalid item id");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
       }
-      next(err);
+      return next(err);
     });
 };

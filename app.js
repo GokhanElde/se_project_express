@@ -33,16 +33,13 @@ app.use((req, res) => {
   res.status(404).send({ message: NOT_FOUND_MESSAGE });
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   const { statusCode = DEFAULT, message } = err;
   res.status(statusCode).send({
     message: statusCode === DEFAULT ? DEFAULT_ERROR_MESSAGE : message,
   });
-  next();
 });
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT);
