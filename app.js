@@ -33,8 +33,9 @@ app.use((req, res) => {
   res.status(404).send({ message: NOT_FOUND_MESSAGE });
 });
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   const { statusCode = DEFAULT, message } = err;
+
   res.status(statusCode).send({
     message: statusCode === DEFAULT ? DEFAULT_ERROR_MESSAGE : message,
   });
