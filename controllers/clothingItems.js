@@ -44,3 +44,47 @@ module.exports.deleteItem = (req, res, next) => {
       return next(err);
     });
 };
+
+module.exports.likeItem = (req, res, next) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = NOT_FOUND;
+      throw error;
+    })
+    .then((item) => res.send(item))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        const error = new Error("Invalid item id");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
+      }
+      return next(err);
+    });
+};
+
+module.exports.dislikeItem = (req, res, next) => {
+  ClothingItem.findByIdAndUpdate(
+    req.params.itemId,
+    { $pull: { likes: req.user._id } },
+    { new: true }
+  )
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = NOT_FOUND;
+      throw error;
+    })
+    .then((item) => res.send(item))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        const error = new Error("Invalid item id");
+        error.statusCode = BAD_REQUEST;
+        return next(error);
+      }
+      return next(err);
+    });
+};

@@ -7,9 +7,7 @@ const {
   NOT_FOUND_MESSAGE,
 } = require("./utils/constants");
 
-const usersRouter = require("./routes/users");
-const itemsRouter = require("./routes/clothingItems");
-const likesRouter = require("./routes/likes");
+const mainRouter = require("./routes");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -25,9 +23,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to the WTWR backend!");
 });
 
-app.use(usersRouter);
-app.use(itemsRouter);
-app.use(likesRouter);
+app.use(mainRouter);
 
 app.use((req, res) => {
   res.status(404).send({ message: NOT_FOUND_MESSAGE });
@@ -39,6 +35,8 @@ app.use((err, req, res, next) => {
   res.status(statusCode).send({
     message: statusCode === DEFAULT ? DEFAULT_ERROR_MESSAGE : message,
   });
+
+  next();
 });
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
