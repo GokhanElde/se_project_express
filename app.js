@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const { DEFAULT } = require("./utils/errors");
+const { DEFAULT, NOT_FOUND } = require("./utils/errors");
 const {
   DEFAULT_ERROR_MESSAGE,
   NOT_FOUND_MESSAGE,
@@ -19,25 +19,21 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the WTWR backend!");
-});
-
 app.use(mainRouter);
 
 app.use((req, res) => {
-  res.status(404).send({ message: NOT_FOUND_MESSAGE });
+  res.status(NOT_FOUND).send({ message: NOT_FOUND_MESSAGE });
 });
 
-app.use((err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
   const { statusCode = DEFAULT, message } = err;
 
   res.status(statusCode).send({
     message: statusCode === DEFAULT ? DEFAULT_ERROR_MESSAGE : message,
   });
+};
 
-  next();
-});
+app.use(errorHandler);
 
 mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
