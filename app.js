@@ -24,7 +24,7 @@ app.use((req, res) => {
 });
 
 const errorHandler = (err, req, res, next) => {
-  void next;
+  next();
   const { statusCode = DEFAULT, message } = err;
 
   res.status(statusCode).send({

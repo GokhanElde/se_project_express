@@ -5,37 +5,18 @@ const User = require("../models/user");
 const { BAD_REQUEST, NOT_FOUND, CONFLICT } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((users) => res.send(users))
-    .catch(next);
-};
-
-module.exports.getUser = (req, res, next) => {
-  User.findById(req.params.userId)
-    .orFail(() => {
-      const error = new Error("User not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
-    })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === "CastError") {
-        const error = new Error("Invalid user id");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
-      }
-      return next(err);
-    });
-};
-
 module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
-  bcrypt
+  if (typeof password !== "string" || password.trim() === "") {
+    const error = new Error("Invalid data");
+    error.statusCode = BAD_REQUEST;
+    return next(error);
+  }
+
+  return bcrypt
     .hash(password, 10)
     .then((hash) => User.create({ name, avatar, email, password: hash }))
-
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
