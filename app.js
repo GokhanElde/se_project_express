@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const { DEFAULT, NOT_FOUND } = require("./utils/errors");
 const {
@@ -14,10 +15,7 @@ const { PORT = 3001 } = process.env;
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = { _id: "000000000000000000000001" };
-  next();
-});
+app.use(cors());
 
 app.use(mainRouter);
 
@@ -26,6 +24,7 @@ app.use((req, res) => {
 });
 
 const errorHandler = (err, req, res, next) => {
+  void next;
   const { statusCode = DEFAULT, message } = err;
 
   res.status(statusCode).send({

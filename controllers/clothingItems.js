@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND } = require("../utils/errors");
+const { BAD_REQUEST, NOT_FOUND, FORBIDDEN } = require("../utils/errors");
 
 module.exports.getItems = (req, res, next) => {
   ClothingItem.find({})
@@ -28,13 +28,20 @@ module.exports.createItem = (req, res, next) => {
 };
 
 module.exports.deleteItem = (req, res, next) => {
-  ClothingItem.findByIdAndDelete(req.params.itemId)
+  ClothingItem.findById(req.params.itemId)
     .orFail(() => {
       const error = new Error("Item not found");
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((item) => res.send(item))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        const error = new Error("Forbidden");
+        error.statusCode = FORBIDDEN;
+        throw error;
+      }
+      return item.deleteOne().then(() => res.send(item));
+    })
     .catch((err) => {
       if (err.name === "CastError") {
         const error = new Error("Invalid item id");
