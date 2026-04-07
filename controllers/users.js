@@ -2,7 +2,12 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
-const { BAD_REQUEST, NOT_FOUND, CONFLICT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  CONFLICT,
+  CREATED,
+} = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 module.exports.createUser = (req, res, next) => {
@@ -20,7 +25,7 @@ module.exports.createUser = (req, res, next) => {
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
-      res.status(201).send(userObj);
+      res.status(CREATED).send(userObj);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -42,7 +47,13 @@ module.exports.createUser = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  User.findUserByCredentials(email, password)
+  if (typeof email !== "string" || typeof password !== "string") {
+    const error = new Error("Invalid data");
+    error.statusCode = BAD_REQUEST;
+    return next(error);
+  }
+
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",

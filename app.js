@@ -23,8 +23,8 @@ app.use((req, res) => {
   res.status(NOT_FOUND).send({ message: NOT_FOUND_MESSAGE });
 });
 
+// eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
-  next();
   const { statusCode = DEFAULT, message } = err;
 
   res.status(statusCode).send({

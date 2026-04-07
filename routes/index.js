@@ -12,7 +12,7 @@ router.get("/items", getItems);
 
 router.use(auth);
 
-router.use(usersRouter);
+router.use("/users", usersRouter);
 router.use(clothingItemsRouter);
 
 module.exports = router;
