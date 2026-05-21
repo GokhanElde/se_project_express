@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { errors } = require("celebrate");
 
 const { DEFAULT, NOT_FOUND } = require("./utils/errors");
 const {
@@ -13,6 +14,8 @@ const mainRouter = require("./routes");
 const app = express();
 const { PORT = 3001 } = process.env;
 
+mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
+
 app.use(express.json());
 
 app.use(cors());
@@ -23,8 +26,13 @@ app.use((req, res) => {
   res.status(NOT_FOUND).send({ message: NOT_FOUND_MESSAGE });
 });
 
+app.use(errors());
+
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
+  // eslint-disable-next-line no-console
+  console.error(err);
+
   const { statusCode = DEFAULT, message } = err;
 
   res.status(statusCode).send({
@@ -33,7 +41,5 @@ const errorHandler = (err, req, res, next) => {
 };
 
 app.use(errorHandler);
-
-mongoose.connect("mongodb://127.0.0.1:27017/wtwr_db");
 
 app.listen(PORT);

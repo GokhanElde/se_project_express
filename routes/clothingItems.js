@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { validateCardBody, validateId } = require("../middlewares/validation");
 
 const {
   createItem,
@@ -7,9 +8,9 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItems");
 
-router.post("/items", createItem);
-router.delete("/items/:itemId", deleteItem);
-router.put("/items/:itemId/likes", likeItem);
-router.delete("/items/:itemId/likes", dislikeItem);
+router.post("/items", validateCardBody, createItem);
+router.delete("/items/:itemId", validateId, deleteItem);
+router.put("/items/:itemId/likes", validateId, likeItem);
+router.delete("/items/:itemId/likes", validateId, dislikeItem);
 
 module.exports = router;
