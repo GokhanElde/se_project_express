@@ -1,7 +1,11 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
+
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const { DEFAULT, NOT_FOUND } = require("./utils/errors");
 const {
@@ -20,11 +24,15 @@ app.use(express.json());
 
 app.use(cors());
 
+app.use(requestLogger);
+
 app.use(mainRouter);
 
 app.use((req, res) => {
   res.status(NOT_FOUND).send({ message: NOT_FOUND_MESSAGE });
 });
+
+app.use(errorLogger);
 
 app.use(errors());
 
