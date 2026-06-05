@@ -34,4 +34,4 @@ Frontend Repository: https://github.com/GokhanElde/se_project_react
 
 # Project Pitch Video
 
-[Project 15 Pitch Video](PASTE_VIDEO_LINK_HERE)
+[Project 15 Pitch Video]
