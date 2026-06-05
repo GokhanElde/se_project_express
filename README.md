@@ -24,3 +24,14 @@ npm run dev — to launch the server with the hot reload feature
 
 Before committing your code, make sure you edit the file sprint.txt in the root folder.
 The file sprint.txt should contain the number of the sprint you're currently working on.
+
+# Deployed Project
+
+Frontend: https://ciddancode.ignorelist.com  
+Backend API: https://api.ciddancode.ignorelist.com
+
+Frontend Repository: https://github.com/GokhanElde/se_project_react
+
+# Project Pitch Video
+
+[Project 15 Pitch Video](PASTE_VIDEO_LINK_HERE)
