@@ -34,16 +34,17 @@ app.get("/crash-test", () => {
 
 app.use(mainRouter);
 
-app.use((req, res) => {
-  res.status(NOT_FOUND).send({ message: NOT_FOUND_MESSAGE });
+app.use((req, res, next) => {
+  const error = new Error(NOT_FOUND_MESSAGE);
+  error.statusCode = NOT_FOUND;
+  next(error);
 });
 
 app.use(errorLogger);
 
 app.use(errors());
 
-// eslint-disable-next-line no-unused-vars
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   // eslint-disable-next-line no-console
   console.error(err);
 

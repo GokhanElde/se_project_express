@@ -3,9 +3,9 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  CONFLICT,
+  BadRequestError,
+  NotFoundError,
+  ConflictError,
   CREATED,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
@@ -14,9 +14,7 @@ module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   if (typeof password !== "string" || password.trim() === "") {
-    const error = new Error("Invalid data");
-    error.statusCode = BAD_REQUEST;
-    return next(error);
+    return next(new BadRequestError("Invalid data"));
   }
 
   return bcrypt
@@ -29,15 +27,11 @@ module.exports.createUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        const error = new Error("Invalid data");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid data"));
       }
 
       if (err.code === 11000) {
-        const error = new Error("Email already exists");
-        error.statusCode = CONFLICT;
-        return next(error);
+        return next(new ConflictError("Email already exists"));
       }
 
       return next(err);
@@ -48,9 +42,7 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (typeof email !== "string" || typeof password !== "string") {
-    const error = new Error("Invalid data");
-    error.statusCode = BAD_REQUEST;
-    return next(error);
+    return next(new BadRequestError("Invalid data"));
   }
 
   return User.findUserByCredentials(email, password)
@@ -66,16 +58,12 @@ module.exports.login = (req, res, next) => {
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      const error = new Error("User not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("User not found");
     })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "CastError") {
-        const error = new Error("Invalid user id");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid user id"));
       }
       return next(err);
     });
@@ -90,22 +78,16 @@ module.exports.updateProfile = (req, res, next) => {
     { new: true, runValidators: true }
   )
     .orFail(() => {
-      const error = new Error("User not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("User not found");
     })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        const error = new Error("Invalid data");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid data"));
       }
 
       if (err.name === "CastError") {
-        const error = new Error("Invalid user id");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid user id"));
       }
 
       return next(err);

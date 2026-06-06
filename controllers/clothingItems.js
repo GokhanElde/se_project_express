@@ -1,5 +1,9 @@
 const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, FORBIDDEN } = require("../utils/errors");
+const {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+} = require("../utils/errors");
 
 module.exports.getItems = (req, res, next) => {
   ClothingItem.find({})
@@ -19,9 +23,7 @@ module.exports.createItem = (req, res, next) => {
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        const error = new Error("Invalid data");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid data"));
       }
       return next(err);
     });
@@ -30,23 +32,17 @@ module.exports.createItem = (req, res, next) => {
 module.exports.deleteItem = (req, res, next) => {
   ClothingItem.findById(req.params.itemId)
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
-        const error = new Error("Forbidden");
-        error.statusCode = FORBIDDEN;
-        throw error;
+        throw new ForbiddenError("Forbidden");
       }
       return item.deleteOne().then(() => res.send(item));
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        const error = new Error("Invalid item id");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid item id"));
       }
       return next(err);
     });
@@ -59,16 +55,12 @@ module.exports.likeItem = (req, res, next) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        const error = new Error("Invalid item id");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid item id"));
       }
       return next(err);
     });
@@ -81,16 +73,12 @@ module.exports.dislikeItem = (req, res, next) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+      throw new NotFoundError("Item not found");
     })
     .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "CastError") {
-        const error = new Error("Invalid item id");
-        error.statusCode = BAD_REQUEST;
-        return next(error);
+        return next(new BadRequestError("Invalid item id"));
       }
       return next(err);
     });
