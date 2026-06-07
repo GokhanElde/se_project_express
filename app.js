@@ -7,7 +7,7 @@ const { errors } = require("celebrate");
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-const { DEFAULT, NOT_FOUND } = require("./utils/errors");
+const { DEFAULT, NotFoundError } = require("./utils/errors");
 const {
   DEFAULT_ERROR_MESSAGE,
   NOT_FOUND_MESSAGE,
@@ -35,9 +35,7 @@ app.get("/crash-test", () => {
 app.use(mainRouter);
 
 app.use((req, res, next) => {
-  const error = new Error(NOT_FOUND_MESSAGE);
-  error.statusCode = NOT_FOUND;
-  next(error);
+  next(new NotFoundError(NOT_FOUND_MESSAGE));
 });
 
 app.use(errorLogger);
